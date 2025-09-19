@@ -54,15 +54,13 @@
 
 
 
+// src/lib/db.js
 import fs from "fs";
 import path from "path";
 
 const dbPath = path.join(process.cwd(), "db.json");
 
 function readDB() {
-  if (!fs.existsSync(dbPath)) {
-    fs.writeFileSync(dbPath, JSON.stringify({ users: [] }, null, 2));
-  }
   const data = fs.readFileSync(dbPath, "utf-8");
   return JSON.parse(data);
 }
@@ -75,12 +73,19 @@ export function getUsers() {
   return readDB().users;
 }
 
-export function findUserByEmail(email) {
-  return getUsers().find((u) => u.email === email);
+export function addUser(user) {
+  const db = readDB();
+  db.users.push(user);
+  writeDB(db);
 }
 
-export function createUser(user) {
+export function getUserByEmail(email) {
+  return getUsers().find(u => u.email === email);
+}
+
+export function createUser(email, hashedPassword) {
   const db = readDB();
+  const user = { id: Date.now().toString(), email, password: hashedPassword };
   db.users.push(user);
   writeDB(db);
   return user;
