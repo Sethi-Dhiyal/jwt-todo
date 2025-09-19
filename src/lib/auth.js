@@ -2,29 +2,25 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
 
-const ACCESS_TOKEN_EXPIRES_IN = process.env.ACCESS_TOKEN_EXPIRES_IN || "1h";
-const REFRESH_TOKEN_EXPIRES_IN = process.env.REFRESH_TOKEN_EXPIRES_IN || "7d";
-
 export async function hashPassword(password) {
-  const salt = await bcrypt.genSalt(10);
-  return bcrypt.hash(password, salt);
+  return await bcrypt.hash(password, 10);
 }
 
-export async function verifyPassword(password, hash) {
-  return bcrypt.compare(password, hash);
+export async function verifyPassword(password, hashedPassword) {
+  return await bcrypt.compare(password, hashedPassword);
 }
 
 export function generateTokens(user) {
   const accessToken = jwt.sign(
     { id: user.id, email: user.email },
     process.env.JWT_SECRET,
-    { expiresIn: ACCESS_TOKEN_EXPIRES_IN }
+    { expiresIn: process.env.ACCESS_TOKEN_EXPIRES_IN || "15m" }
   );
 
   const refreshToken = jwt.sign(
     { id: user.id, email: user.email },
     process.env.JWT_REFRESH_SECRET,
-    { expiresIn: REFRESH_TOKEN_EXPIRES_IN }
+    { expiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN || "7d" }
   );
 
   return { accessToken, refreshToken };
@@ -32,50 +28,16 @@ export function generateTokens(user) {
 
 export function setAuthCookies({ accessToken, refreshToken }) {
   const cookieStore = cookies();
-  const secureFlag = process.env.NODE_ENV === "production";
-
-  cookieStore.set({
-    name: "accessToken",
-    value: accessToken,
+  cookieStore.set("accessToken", accessToken, {
     httpOnly: true,
+    secure: true,
     path: "/",
-    sameSite: "lax",
-    secure: secureFlag,
-    maxAge: 60 * 60,
+    maxAge: 60 * 15, // 15 minutes
   });
-
-  cookieStore.set({
-    name: "refreshToken",
-    value: refreshToken,
+  cookieStore.set("refreshToken", refreshToken, {
     httpOnly: true,
+    secure: true,
     path: "/",
-    sameSite: "lax",
-    secure: secureFlag,
-    maxAge: 60 * 60 * 24 * 7,
-  });
-}
-
-export function clearAuthCookies() {
-  const cookieStore = cookies();
-  const secureFlag = process.env.NODE_ENV === "production";
-
-  cookieStore.set({
-    name: "accessToken",
-    value: "",
-    httpOnly: true,
-    path: "/",
-    sameSite: "lax",
-    secure: secureFlag,
-    maxAge: 0,
-  });
-
-  cookieStore.set({
-    name: "refreshToken",
-    value: "",
-    httpOnly: true,
-    path: "/",
-    sameSite: "lax",
-    secure: secureFlag,
-    maxAge: 0,
+    maxAge: 60 * 60 * 24 * 7, // 7 days
   });
 }

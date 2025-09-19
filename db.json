@@ -1,45 +1,9 @@
 {
   "users": [
     {
-      "id": "1758260366226",
-      "email": "test@test.com",
-      "password": "$2b$10$atdWWufsP59L.74TnuFOEOW3R480XqeBEhQSy8whFhS/cbz3TYmy6"
-    },
-    {
-      "id": "1758260799539",
-      "email": "sethi@gmail.com",
-      "password": "$2b$10$YzzYIBjwzcV7q4zPVuqzAOiGdj48Po5S38W6L./4pIdAToVUDS/l."
-    },
-    {
-      "id": "1758261124998",
-      "email": "abc@gmail.com",
-      "password": "$2b$10$zlQi9TT3bEh7XPmk.jTFvu29ZNm/.bcopX6SJpADbA5KstLuCIp1e"
-    },
-    {
-      "id": "1758262071214",
-      "email": "ab@gmail.com",
-      "password": "$2b$10$utjGXKVfN3vD/LJZG.HGyesNn/AvrPqHfV0WZidoJy5SX9iVJPmnu"
-    },
-    {
-      "id": "1758262901661",
-      "email": "a@gmail.com",
-      "password": "$2b$10$Bmy8sQW4IScn0RT7L21jReNcZrIV5.MdTZTwQdKhIKj0QO7dgevq2"
-    },
-    {
-      "id": "1758263299036",
-      "email": "a@gamil.com",
-      "password": "$2b$10$JXTk7VE/yVVMM66pi.At5OQ0CdblyRed1.s3KFgPm9YFihoKxnTIW"
-    },
-    {
-      "id": "1758263696611",
-      "email": "aa@gmail.com",
-      "password": "$2b$10$.F8/AFByo4qnjAo3/O2FRudxfJhNiWypy6wDJ0e.zmMaC/CNayEU2"
-    },
-    {
-      "id": "1758263762044",
-      "email": "rahul@gmail.com",
-      "password": "$2b$10$EL0A44pwYDURRlcd2SL2g.LWvtaei2d14NUC7G7hI3YqG3CO/26yy"
+      "id": "1",
+      "email": "demo@test.com",
+      "password": "$2a$10$Y7Fo9j.2U5KgR6YvKjCqKuJqz4UeV6npyW2vW7CHzqfYq6KjXxC7S"
     }
-  ],
-  "todos": []
+  ]
 }

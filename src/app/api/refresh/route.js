@@ -1,25 +1,24 @@
-// src/app/api/refresh/route.js
 import { NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
-import { generateTokens, setAuthCookies } from "@/lib/auth";
-import { getUserByEmail } from "@/lib/db";
 import { cookies } from "next/headers";
+import { generateTokens, setAuthCookies } from "@/lib/auth";
 
 export async function POST() {
   try {
-    const cookieStore = await cookies();
+    const cookieStore = cookies();
     const refreshToken = cookieStore.get("refreshToken")?.value;
-    if (!refreshToken) throw new Error("No refresh token");
 
-    const payload = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
-    const user = getUserByEmail(payload.email);
-    if (!user) throw new Error("User not found");
+    if (!refreshToken) {
+      return NextResponse.json({ error: "No refresh token" }, { status: 401 });
+    }
 
-    const tokens = generateTokens(user);
-    await setAuthCookies(tokens);
+    const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+    const { accessToken, refreshToken: newRefresh } = generateTokens(decoded);
 
-    return NextResponse.json({ message: "Token refreshed", user: { id: user.id, email: user.email } });
+    setAuthCookies({ accessToken, refreshToken: newRefresh });
+
+    return NextResponse.json({ message: "Tokens refreshed" });
   } catch (err) {
-    return NextResponse.json({ error: "Invalid refresh token" }, { status: 401 });
+    return NextResponse.json({ error: "Invalid refresh token" }, { status: 403 });
   }
 }

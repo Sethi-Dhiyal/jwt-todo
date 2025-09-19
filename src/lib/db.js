@@ -60,6 +60,9 @@ import path from "path";
 const dbPath = path.join(process.cwd(), "db.json");
 
 function readDB() {
+  if (!fs.existsSync(dbPath)) {
+    fs.writeFileSync(dbPath, JSON.stringify({ users: [] }, null, 2));
+  }
   const data = fs.readFileSync(dbPath, "utf-8");
   return JSON.parse(data);
 }
@@ -72,19 +75,13 @@ export function getUsers() {
   return readDB().users;
 }
 
-export function addUser(user) {
-  const db = readDB();
-  db.users.push(user);
-  writeDB(db);
-}
-
-export function getUserByEmail(email) {
+export function findUserByEmail(email) {
   return getUsers().find((u) => u.email === email);
 }
 
-
-
-
-
-
-
+export function createUser(user) {
+  const db = readDB();
+  db.users.push(user);
+  writeDB(db);
+  return user;
+}

@@ -17,9 +17,12 @@ export async function POST(req) {
     }
 
     const { accessToken, refreshToken } = generateTokens(user);
-    await setAuthCookies({ accessToken, refreshToken }); // ✅ await added
+    setAuthCookies({ accessToken, refreshToken });
 
-    return NextResponse.json({ user: { id: user.id, email: user.email } });
+    return NextResponse.json({
+      message: "Login successful",
+      user: { id: user.id, email: user.email },
+    });
   } catch (err) {
     console.error("Login error", err);
     return NextResponse.json({ error: "Server error" }, { status: 500 });
