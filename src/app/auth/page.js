@@ -13,11 +13,8 @@ export default function AuthPage() {
   async function handleSubmit(e) {
     e.preventDefault();
     try {
-      if (isLogin) {
-        await login(email, password);
-      } else {
-        await signup(email, password);
-      }
+      if (isLogin) await login(email, password);
+      else await signup(email, password);
       router.push("/todos");
     } catch (err) {
       alert(err.message);
@@ -27,12 +24,9 @@ export default function AuthPage() {
   return (
     <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 px-4">
       <div className="bg-white/20 backdrop-blur-xl border border-white/30 shadow-xl rounded-3xl p-10 w-full max-w-md text-white">
-        {/* Heading */}
         <h1 className="text-3xl font-bold text-center mb-6 tracking-wide">
           {isLogin ? "Welcome Back 👋" : "Create Account 🚀"}
         </h1>
-
-        {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-5">
           <input
             type="email"
@@ -57,15 +51,11 @@ export default function AuthPage() {
             {isLogin ? "Login" : "Signup"}
           </button>
         </form>
-
-        {/* Switch */}
         <p
           onClick={() => setIsLogin(!isLogin)}
           className="mt-6 text-sm text-center text-pink-200 hover:text-white cursor-pointer transition"
         >
-          {isLogin
-            ? "Don't have an account? Signup"
-            : "Already have an account? Login"}
+          {isLogin ? "Don't have an account? Signup" : "Already have an account? Login"}
         </p>
       </div>
     </main>

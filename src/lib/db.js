@@ -54,7 +54,6 @@
 
 
 
-// src/lib/db.js
 import fs from "fs";
 import path from "path";
 
@@ -71,12 +70,6 @@ function writeDB(data) {
 
 export function getUsers() {
   return readDB().users;
-}
-
-export function addUser(user) {
-  const db = readDB();
-  db.users.push(user);
-  writeDB(db);
 }
 
 export function getUserByEmail(email) {

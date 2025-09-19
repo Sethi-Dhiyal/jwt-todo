@@ -7,9 +7,7 @@ export async function GET() {
     const cookieStore = cookies();
     const token = cookieStore.get("accessToken")?.value;
 
-    if (!token) {
-      return NextResponse.json({ user: null });
-    }
+    if (!token) return NextResponse.json({ user: null });
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     return NextResponse.json({ user: { id: decoded.id, email: decoded.email } });

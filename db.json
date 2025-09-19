@@ -1,9 +1,4 @@
 {
-  "users": [
-    {
-      "id": "1",
-      "email": "demo@test.com",
-      "password": "$2a$10$Y7Fo9j.2U5KgR6YvKjCqKuJqz4UeV6npyW2vW7CHzqfYq6KjXxC7S"
-    }
-  ]
+  "users": [],
+  "todos": []
 }

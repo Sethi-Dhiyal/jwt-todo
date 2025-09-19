@@ -2,21 +2,18 @@
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { PlusCircle, LogOut, CheckCircle } from "lucide-react";
 
 export default function TodoPage() {
   const { user, logout } = useAuth();
   const router = useRouter();
   const [todos, setTodos] = useState([]);
   const [task, setTask] = useState("");
-  const[loading,setLoading]=useState("");
+  const [loading, setLoading] = useState(true);
 
-   // ✅ wait for auth check to complete
   useEffect(() => {
-    if (!loading && !user) {
-      router.push("/auth");
-    }
-  }, [user, loading, router]);
+    setLoading(false);
+    if (!user) router.push("/auth");
+  }, [user, router]);
 
   function addTodo(e) {
     e.preventDefault();
@@ -25,16 +22,8 @@ export default function TodoPage() {
     setTask("");
   }
 
-  if (loading) {
-    // ✅ show loading while auth check
-    return (
-      <div className="flex items-center justify-center min-h-screen text-gray-500">
-        Loading...
-      </div>
-    );
-  }
-
-  if (!user) return null; // will redirect
+  if (loading) return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+  if (!user) return null;
 
   return (
     <main className="min-h-screen flex items-center justify-center bg-gray-50 p-6">
@@ -48,20 +37,16 @@ export default function TodoPage() {
             placeholder="Enter a todo"
             className="flex-1 border rounded-lg px-4 text-green-500 py-2 focus:outline-none focus:ring-2 focus:ring-gray-400"
           />
-          <button className="bg-green-600 text-white px-4 cursor-pointer rounded-lg hover:bg-gray-700">
-            Add
-          </button>
+          <button className="bg-green-600 text-white px-4 rounded-lg hover:bg-gray-700">Add</button>
         </form>
         <ul className="space-y-2 mb-4">
           {todos.map((t) => (
-            <li key={t.id} className="border p-2 rounded flex justify-between">
-              {t.text}
-            </li>
+            <li key={t.id} className="border p-2 rounded flex justify-between">{t.text}</li>
           ))}
         </ul>
         <button
           onClick={logout}
-          className="w-full bg-green-600 text-white py-2 cursor-pointer rounded hover:bg-gray-700"
+          className="w-full bg-green-600 text-white py-2 rounded hover:bg-gray-700"
         >
           Logout
         </button>
