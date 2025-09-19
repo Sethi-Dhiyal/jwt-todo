@@ -3,6 +3,7 @@ import { createContext, useState, useContext, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 const AuthContext = createContext();
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
@@ -36,18 +37,25 @@ export function AuthProvider({ children }) {
   }, []);
 
   async function login(email, password) {
-    const res = await fetch("/api/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify({ email, password }),
-    });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || "Login failed");
-    setUser(data.user);
-    localStorage.removeItem("loggedOut");
+  const res = await fetch(`${API_BASE}/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ email, password }),
+  });
+
+  let data;
+  try {
+    data = await res.json();
+  } catch (e) {
+    console.error("Failed to parse JSON", e);
+    throw new Error("Server returned invalid response");
   }
 
+  if (!res.ok) throw new Error(data.error || "Login failed");
+  setUser(data.user);
+  localStorage.removeItem("loggedOut");
+}
   async function logout() {
     await fetch("/api/logout", { method: "POST", credentials: "include" });
     setUser(null);
