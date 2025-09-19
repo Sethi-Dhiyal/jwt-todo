@@ -17,7 +17,7 @@ export async function POST(req) {
     }
 
     const { accessToken, refreshToken } = generateTokens(user);
-    setAuthCookies({ accessToken, refreshToken });
+    await setAuthCookies({ accessToken, refreshToken }); // ✅ await added
 
     return NextResponse.json({ user: { id: user.id, email: user.email } });
   } catch (err) {
