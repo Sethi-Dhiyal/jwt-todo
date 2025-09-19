@@ -6,40 +6,38 @@ const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true); // ✅ loading state
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  // ✅ Use API base URL from env
+  // ✅ API base (Vercel ke liye env se)
   const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "";
 
+  // ✅ init auth (check current user)
   useEffect(() => {
     async function init() {
-      const loggedOut = localStorage.getItem("loggedOut");
-      if (loggedOut) {
-        setLoading(false);
-        return;
-      }
-
       try {
         const res = await fetch(`${API_BASE}/api/me`, {
           credentials: "include",
         });
         const data = await res.json();
+
         if (res.ok && data.user) {
           setUser(data.user);
         } else {
           setUser(null);
         }
-      } catch (e) {
-        console.log("auth init error", e);
+      } catch (err) {
+        console.error("Auth init error", err);
         setUser(null);
       } finally {
         setLoading(false);
       }
     }
+
     init();
   }, [API_BASE]);
 
+  // ✅ login
   async function login(email, password) {
     const res = await fetch(`${API_BASE}/api/login`, {
       method: "POST",
@@ -48,19 +46,14 @@ export function AuthProvider({ children }) {
       body: JSON.stringify({ email, password }),
     });
 
-    let data;
-    try {
-      data = await res.json();
-    } catch (e) {
-      console.error("Invalid JSON response", e);
-      throw new Error("Server error");
-    }
-
+    const data = await res.json();
     if (!res.ok) throw new Error(data.error || "Login failed");
+
     setUser(data.user);
-    localStorage.removeItem("loggedOut");
+    router.push("/todos");
   }
 
+  // ✅ signup
   async function signup(email, password) {
     const res = await fetch(`${API_BASE}/api/signup`, {
       method: "POST",
@@ -69,33 +62,22 @@ export function AuthProvider({ children }) {
       body: JSON.stringify({ email, password }),
     });
 
-    let data;
-    try {
-      data = await res.json();
-    } catch (e) {
-      console.error("Invalid JSON response", e);
-      throw new Error("Server error");
-    }
-
+    const data = await res.json();
     if (!res.ok) throw new Error(data.error || "Signup failed");
+
     setUser(data.user);
-    localStorage.removeItem("loggedOut");
+    router.push("/todos");
   }
 
+  // ✅ logout
   async function logout() {
-    const res = await fetch(`${API_BASE}/api/logout`, {
+    await fetch(`${API_BASE}/api/logout`, {
       method: "POST",
       credentials: "include",
     });
 
-    try {
-      await res.json();
-    } catch (e) {
-      console.error("Logout response not JSON", e);
-    }
-
     setUser(null);
-    localStorage.setItem("loggedOut", "true");
+    router.push("/auth");
   }
 
   return (

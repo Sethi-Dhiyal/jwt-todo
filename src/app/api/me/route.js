@@ -1,21 +1,19 @@
-// src/app/api/me/route.js
 import { NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
-import { getUserByEmail } from "@/lib/db";
 import { cookies } from "next/headers";
 
 export async function GET() {
   try {
-    const cookieStore = await cookies();
-    const accessToken = cookieStore.get("accessToken")?.value;
-    if (!accessToken) return NextResponse.json({ user: null }, { status: 401 });
+    const cookieStore = cookies();
+    const token = cookieStore.get("accessToken")?.value;
 
-    const payload = jwt.verify(accessToken, process.env.JWT_SECRET);
-    const user = getUserByEmail(payload.email);
-    if (!user) return NextResponse.json({ user: null }, { status: 404 });
+    if (!token) {
+      return NextResponse.json({ user: null });
+    }
 
-    return NextResponse.json({ user: { id: user.id, email: user.email } });
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    return NextResponse.json({ user: { id: decoded.id, email: decoded.email } });
   } catch (err) {
-    return NextResponse.json({ user: null }, { status: 401 });
+    return NextResponse.json({ user: null });
   }
 }

@@ -2,7 +2,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
 
-const ACCESS_TOKEN_EXPIRES_IN = process.env.ACCESS_TOKEN_EXPIRES_IN || "1h"; // dev: 1h
+const ACCESS_TOKEN_EXPIRES_IN = process.env.ACCESS_TOKEN_EXPIRES_IN || "1h";
 const REFRESH_TOKEN_EXPIRES_IN = process.env.REFRESH_TOKEN_EXPIRES_IN || "7d";
 
 export async function hashPassword(password) {
@@ -20,17 +20,18 @@ export function generateTokens(user) {
     process.env.JWT_SECRET,
     { expiresIn: ACCESS_TOKEN_EXPIRES_IN }
   );
+
   const refreshToken = jwt.sign(
     { id: user.id, email: user.email },
     process.env.JWT_REFRESH_SECRET,
     { expiresIn: REFRESH_TOKEN_EXPIRES_IN }
   );
+
   return { accessToken, refreshToken };
 }
 
-// ✅ Set cookies every login/signup
-export async function setAuthCookies({ accessToken, refreshToken }) {
-  const cookieStore = await cookies();
+export function setAuthCookies({ accessToken, refreshToken }) {
+  const cookieStore = cookies();
   const secureFlag = process.env.NODE_ENV === "production";
 
   cookieStore.set({
@@ -40,7 +41,7 @@ export async function setAuthCookies({ accessToken, refreshToken }) {
     path: "/",
     sameSite: "lax",
     secure: secureFlag,
-    maxAge: 60 * 60, // 1 hour
+    maxAge: 60 * 60,
   });
 
   cookieStore.set({
@@ -50,19 +51,21 @@ export async function setAuthCookies({ accessToken, refreshToken }) {
     path: "/",
     sameSite: "lax",
     secure: secureFlag,
-    maxAge: 60 * 60 * 24 * 7, // 7 days
+    maxAge: 60 * 60 * 24 * 7,
   });
 }
 
-// ✅ Clear cookies on logout
-export async function clearAuthCookies() {
-  const cookieStore = await cookies();
+export function clearAuthCookies() {
+  const cookieStore = cookies();
+  const secureFlag = process.env.NODE_ENV === "production";
 
   cookieStore.set({
     name: "accessToken",
     value: "",
     httpOnly: true,
     path: "/",
+    sameSite: "lax",
+    secure: secureFlag,
     maxAge: 0,
   });
 
@@ -71,6 +74,8 @@ export async function clearAuthCookies() {
     value: "",
     httpOnly: true,
     path: "/",
+    sameSite: "lax",
+    secure: secureFlag,
     maxAge: 0,
   });
 }
